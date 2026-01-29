@@ -1,0 +1,22 @@
+databases:
+  - name: claverica-db
+    databaseName: claverica_db
+    user: claverica_user
+
+services:
+  - type: web
+    name: claverica-backend
+    env: python
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate"
+    startCommand: "gunicorn config.wsgi:application"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: False
+      - key: DATABASE_URL
+        fromDatabase:
+          name: claverica-db
+          property: connectionString
+      - key: ALLOWED_HOSTS
+        value: .onrender.com
